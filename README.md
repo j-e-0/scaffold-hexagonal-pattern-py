@@ -18,18 +18,21 @@ This project is a FastAPI application designed with Hexagonal Architecture (Port
 ## Installation
 
 1. Clone the repository:
+
     ```bash
     git clone https://github.com/yourusername/your-repo-name.git
     cd your-repo-name
     ```
 
 2. Create a virtual environment:
+
     ```bash
     python -m venv venv
     source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
     ```
 
 3. Install the dependencies:
+
     ```bash
     pip install -r requirements.txt
     ```
@@ -39,6 +42,7 @@ This project is a FastAPI application designed with Hexagonal Architecture (Port
 ## Usage
 
 1. Start the application:
+
     ```bash
     uvicorn app.main:app --reload
     ```
@@ -70,7 +74,11 @@ project/
 │   ├── main.py
 │   └── __init__.py
 ├── domain/
-│   ├── models/
+│   ├── abstracts/
+│   │   ├── user.py
+│   │   ├── product.py
+│   │   └── __init__.py
+│   ├── schemas/
 │   │   ├── user.py
 │   │   ├── product.py
 │   │   └── __init__.py
@@ -80,14 +88,14 @@ project/
 │   │   └── __init__.py
 ├── infrastructure/
 │   ├── db/
+│   │   ├── models/
+│   │   │   ├── user.py
+│   │   │   ├── product.py
+│   │   │   └── __init__.py
 │   │   ├── database.py
 │   │   ├── user_repository.py
 │   │   ├── product_repository.py
 │   │   └── __init__.py
-├── schemas/
-│   ├── user.py
-│   ├── product.py
-│   └── __init__.py
 ├── tests/
 │   ├── test_user.py
 │   ├── test_product.py
@@ -105,13 +113,13 @@ project/
   - **main.py**: Application entry point.
 
 - **domain/**: Domain layer containing business logic.
-  - **models/**: Domain models representing business entities.
+  - **abstracts/**: Domain abstracts representing communication and inverse responsabilities.
+  - **schemas/**: Domain Schemas for data validation.
   - **services/**: Domain services containing business logic.
 
 - **infrastructure/**: Infrastructure layer containing database interactions.
   - **db/**: Database configuration and repository implementations.
-
-- **schemas/**: Schemas for data validation.
+    - **models/**: Databse models representing business entities.
 
 - **tests/**: Test files for unit and integration tests.
 
@@ -121,7 +129,7 @@ project/
 
 If not already installed, add Alembic to your `requirements.txt` and install the dependencies:
 
-```
+```bash
 alembic
 ```
 
@@ -131,152 +139,7 @@ Install the dependencies:
 pip install -r requirements.txt
 ```
 
-### 2. Initialize Alembic
-
-Initialize Alembic in your project:
-
-```bash
-alembic init alembic
-```
-
-This will create an `alembic` directory and an `alembic.ini` file at the root of your project.
-
-### 3. Configure `alembic.ini`
-
-Edit the `alembic.ini` file to point to your database connection string. Replace the `sqlalchemy.url` line with your database URL, like so:
-
-```ini
-sqlalchemy.url = sqlite:///./test.db
-```
-
-### 4. Configure `env.py`
-
-Edit the `alembic/env.py` file to include your database models. Replace the contents of `env.py` with the following:
-
-```python
-from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from alembic import context
-
-# Import the models
-from infrastructure.db.database import Base
-from domain.models.user import User
-from domain.models.product import Product
-
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
-config = context.config
-
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
-fileConfig(config.config_file_name)
-
-# add your model's MetaData object here
-# for 'autogenerate' support
-target_metadata = Base.metadata
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
-
-
-def run_migrations_offline():
-    """Run migrations in 'offline' mode.
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-    Calls to context.execute() here emit the given string to the
-    script output.
-    """
-    url = config.get_main_option("sqlalchemy.url")
-    context.configure(
-        url=url, target_metadata=target_metadata, literal_binds=True, dialect_opts={"paramstyle": "named"}
-    )
-
-    with context.begin_transaction():
-        context.run_migrations()
-
-
-def run_migrations_online():
-    """Run migrations in 'online' mode.
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-    """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section), prefix="sqlalchemy.", poolclass=pool.NullPool
-    )
-
-    with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
-
-        with context.begin_transaction():
-            context.run_migrations()
-
-
-if context.is_offline_mode():
-    run_migrations_offline()
-else:
-    run_migrations_online()
-```
-
-### 5. Create an Initial Migration
-
-Create an initial migration to add the `users` and `products` tables:
-
-```bash
-alembic revision --autogenerate -m "Initial migration"
-```
-
-This will create a migration file in `alembic/versions` with a unique name. Edit the generated file to ensure the tables are correct. It should look something like this:
-
-```python
-"""Initial migration
-
-Revision ID: some_unique_id
-Revises: 
-Create Date: 2023-10-10 12:00:00.000000
-
-"""
-from alembic import op
-import sqlalchemy as sa
-
-
-# revision identifiers, used by Alembic.
-revision = 'some_unique_id'
-down_revision = None
-branch_labels = None
-depends_on = None
-
-
-def upgrade():
-    # ### commands auto generated by Alembic - please adjust! ###
-    op.create_table('users',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('username', sa.String(), nullable=True),
-    sa.Column('email', sa.String(), nullable=True),
-    sa.Column('password', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('products',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=True),
-    sa.Column('price', sa.Float(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    # ### end Alembic commands ###
-
-
-def downgrade():
-    # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table('products')
-    op.drop_table('users')
-    # ### end Alembic commands ###
-```
-
-### 6. Apply the Migration
+### 2. Apply the Migration
 
 Apply the migration to create the tables in the database:
 
@@ -290,6 +153,7 @@ alembic upgrade head
 
 - **POST /users/**: Create a new user
   - Request Body:
+
     ```json
     {
       "username": "john",
@@ -305,7 +169,6 @@ alembic upgrade head
 - **POST /products/**: Create a new product
   - Request Body:
 
-
     ```json
     {
       "name": "Product1",
@@ -318,9 +181,34 @@ alembic upgrade head
 ## Running Tests
 
 1. To run the tests, use the following command:
+
     ```bash
     pytest
     ```
+
+## Contributing
+
+1. Fork the repository.
+2. Create a new branch:
+
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
+
+3. Make your changes.
+4. Commit your changes:
+
+    ```bash
+    git commit -m 'Add some feature'
+    ```
+
+5. Push to the branch:
+
+    ```bash
+    git push origin feature/your-feature-name
+    ```
+
+6. Open a pull request.
 
 ## License
 

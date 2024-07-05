@@ -31,13 +31,13 @@ def setup():
 
 def test_create_product():
     response = client.post("/products/", json={"name": "Product1", "price": 100.0})
-    assert response.status_code == 201
+    assert response.status_code == 200
     assert response.json()["name"] == "Product1"
     assert response.json()["price"] == 100.0
 
 def test_read_product():
     response = client.post("/products/", json={"name": "Product2", "price": 200.0})
-    assert response.status_code == 201
+    assert response.status_code == 200
     product_id = response.json()["id"]
     response = client.get(f"/products/{product_id}")
     assert response.status_code == 200

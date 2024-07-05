@@ -5,8 +5,8 @@ from alembic import context
 
 # Import the models
 from infrastructure.db.database import Base
-from domain.models.user import User
-from domain.models.product import Product
+from infrastructure.db.models.user import User
+from infrastructure.db.models.product import Product
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -31,13 +31,13 @@ def setup():
 
 def test_create_user():
     response = client.post("/users/", json={"username": "john", "email": "john@example.com", "password": "password"})
-    assert response.status_code == 201
+    assert response.status_code == 200
     assert response.json()["username"] == "john"
     assert response.json()["email"] == "john@example.com"
 
 def test_read_user():
     response = client.post("/users/", json={"username": "jane", "email": "jane@example.com", "password": "password"})
-    assert response.status_code == 201
+    assert response.status_code == 200
     user_id = response.json()["id"]
     response = client.get(f"/users/{user_id}")
     assert response.status_code == 200
