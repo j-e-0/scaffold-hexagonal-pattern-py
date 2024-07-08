@@ -20,8 +20,8 @@ This project is a FastAPI application designed with Hexagonal Architecture (Port
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/yourusername/your-repo-name.git
-    cd your-repo-name
+    git clone https://github.com/j-e-0/scaffold-hexagonal-pattern-py
+    cd scaffold-hexagonal-pattern-py
     ```
 
 2. Create a virtual environment:
@@ -188,27 +188,7 @@ alembic upgrade head
 
 ## Contributing
 
-1. Fork the repository.
-2. Create a new branch:
-
-    ```bash
-    git checkout -b feature/your-feature-name
-    ```
-
-3. Make your changes.
-4. Commit your changes:
-
-    ```bash
-    git commit -m 'Add some feature'
-    ```
-
-5. Push to the branch:
-
-    ```bash
-    git push origin feature/your-feature-name
-    ```
-
-6. Open a pull request.
+Contributions are welcome! Please fork the repository and create a pull request with your changes.
 
 ## License
 
